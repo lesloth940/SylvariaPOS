@@ -1001,36 +1001,24 @@ async function updateEconomy(){
         .value
     );
 
-    if (!supply || supply <= 0) {
-        toast("Currency supply must be greater than 0");
-        return;
-    }
-
     const businesses =
-    await db.collection("businesses").get();
+    await db.collection("businesses")
+    .get();
 
     let sales = 0;
 
     businesses.forEach(doc=>{
-        const data = doc.data();
 
-if (!data) return;
-
-sales += data.revenue || 0;
+        sales += doc.data().revenue || 0;
     });
 
     const index = sales / supply;
 
-    if (!isFinite(index)) {
-        toast("Invalid economy calculation");
-        return;
-    }
-
     await db.collection("economy")
     .doc("global")
     .set({
-        totalSupply: supply,
-        currencyIndex: index
+        totalSupply:supply,
+        currencyIndex:index
     });
 
     toast("Economy updated");
