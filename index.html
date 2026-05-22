@@ -1012,7 +1012,11 @@ async function updateEconomy(){
     let sales = 0;
 
     businesses.forEach(doc=>{
-        sales += doc.data().revenue || 0;
+        const data = doc.data();
+
+if (!data) return;
+
+sales += data.revenue || 0;
     });
 
     const index = sales / supply;
