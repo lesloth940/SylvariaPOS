@@ -1078,18 +1078,22 @@ async function loadProducts(){
 
         products.push(p);
 
-        container.innerHTML += `
-        <div class="product"
-        onclick="addToCart('${doc.id}')">
+      container.innerHTML += `
+<div class="product">
 
-            <h3>${p.name}</h3>
+    <div onclick="addToCart('${doc.id}')">
+        <h3>${p.name}</h3>
+        <p style="margin-top:10px">$${p.price}</p>
+    </div>
 
-            <p style="margin-top:10px">
-                $${p.price}
-            </p>
+    <button
+        onclick="deleteProduct('${doc.id}')"
+        style="margin-top:10px;background:#ef4444;color:white;border:none;padding:8px;border-radius:8px;width:100%;cursor:pointer;">
+        Delete Item
+    </button>
 
-        </div>
-        `;
+</div>
+`;
     });
 }
 
@@ -1107,6 +1111,29 @@ function addToCart(id){
     renderCart();
 
     toast(p.name + " added");
+}
+
+async function deleteProduct(id){
+
+    // safety check (optional but recommended)
+    const accountType = localStorage.getItem("accountType");
+
+    if(accountType !== "admin" && accountType !== "business"){
+        toast("No permission");
+        return;
+    }
+
+    if(!confirm("Delete this product?")) return;
+
+    try{
+        await db.collection("products").doc(id).delete();
+
+        toast("Product deleted");
+
+        loadProducts(); // refresh UI
+    }catch(e){
+        toast(e.message);
+    }
 }
 
 function renderCart(){
