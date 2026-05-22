@@ -1188,38 +1188,22 @@ async function checkout(){
     );
 
     if(payment < total){
+
         toast("Insufficient payment");
+
         return;
     }
 
-    const change = payment - total;
+    const change = payment-total;
 
-    // 1. Save transaction
-    await db.collection("transactions").add({
-        items: cart,
+    await db.collection("transactions")
+    .add({
+        items:cart,
         total,
         payment,
         change,
-        createdAt: Date.now()
+        createdAt:Date.now()
     });
-
-    // 2. Update business revenue (FIXED)
-    const user = auth.currentUser;
-
-    if(user){
-        const ref = db.collection("businesses").doc(user.uid);
-
-        await db.runTransaction(async (t) => {
-            const snap = await t.get(ref);
-
-            const current = snap.data().revenue || 0;
-
-            t.update(ref, {
-                revenue: current + total,
-                transactions: (snap.data().transactions || 0) + 1
-            });
-        });
-    }
 
     toast(
         "Checkout complete. Change: $" +
@@ -1227,6 +1211,7 @@ async function checkout(){
     );
 
     cart = [];
+
     renderCart();
 }
 
