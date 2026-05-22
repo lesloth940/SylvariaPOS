@@ -9,7 +9,7 @@
 <!-- CHART -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- FIREBASE -->
+<!-- FIREBASE --
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -682,44 +682,72 @@ function toast(msg){
 async function login(){
 
     const email =
-        document.getElementById("email").value;
+    document.getElementById("email").value;
 
     const password =
-        document.getElementById("password").value;
+    document.getElementById("password").value;
 
     try{
 
-        const user =
+        const userCredential =
         await auth.signInWithEmailAndPassword(
             email,
             password
         );
 
+        const uid = userCredential.user.uid;
+
+        // CHECK ADMIN
         const adminDoc =
         await db.collection("admins")
-        .doc(user.user.uid)
+        .doc(uid)
         .get();
 
-        if(!adminDoc.exists){
+        if(adminDoc.exists){
 
-            toast("Not an admin");
+            localStorage.setItem("accountType","admin");
 
-            auth.signOut();
+            document.getElementById("loginPage")
+            .classList.add("hidden");
+
+            document.getElementById("app")
+            .classList.remove("hidden");
+
+            loadDashboard();
+            loadBusinesses();
+            loadProducts();
+
+            toast("Admin login successful");
 
             return;
         }
 
-        document.getElementById("loginPage")
-        .classList.add("hidden");
+        // CHECK BUSINESS
+        const businessDoc =
+        await db.collection("businesses")
+        .doc(uid)
+        .get();
 
-        document.getElementById("app")
-        .classList.remove("hidden");
+        if(businessDoc.exists){
 
-        loadDashboard();
-        loadBusinesses();
-        loadProducts();
+            localStorage.setItem("accountType","business");
 
-        toast("Welcome back");
+            document.getElementById("loginPage")
+            .classList.add("hidden");
+
+            document.getElementById("app")
+            .classList.remove("hidden");
+
+            loadBusinessView(businessDoc.data());
+
+            toast("Business login successful");
+
+            return;
+        }
+
+        toast("Account not found");
+
+        auth.signOut();
 
     }catch(e){
 
