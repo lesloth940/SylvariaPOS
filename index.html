@@ -9,10 +9,7 @@
 <!-- CHART -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 
 <!-- ICONS -->
 <link rel="stylesheet"
@@ -607,6 +604,11 @@ table th{
 
 </div>
 
+    <!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script
+    
 <script>
 
 //////////////////////////////////////////////////////
@@ -623,7 +625,11 @@ const firebaseConfig = {
   measurementId: "G-WKEZ8TSNYC"
 };
 
-firebase.initializeApp(firebaseConfig);
+window.addEventListener("load", () => {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+});
 
 const auth = firebase.auth();
 const db = firebase.firestore();
